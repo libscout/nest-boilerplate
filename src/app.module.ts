@@ -4,6 +4,7 @@ import { AppService } from './app.service';
 import { ConfigModule } from '@src/tools/config';
 import { ContextModule } from '@src/tools/context';
 import { DbModule } from '@src/tools/db';
+import { LoggerModule } from '@src/tools/logger';
 import { RedisModule } from '@src/tools/redis';
 
 @Module({
@@ -12,6 +13,7 @@ import { RedisModule } from '@src/tools/redis';
     DbModule.register(),
     RedisModule.register(),
     ContextModule,
+    LoggerModule.register({ service: 'nest-boilerplate' }),
   ],
   controllers: [AppController],
   providers: [AppService],

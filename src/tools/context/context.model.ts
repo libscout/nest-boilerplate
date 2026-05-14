@@ -4,8 +4,8 @@
  */
 export interface RequestContext {
   /** Unique identifier for this request. */
-  requestId: string;
+  requestID: string;
 
   /** Authenticated user ID. Populated by auth guard/middleware. */
-  userId?: string;
+  userID?: string;
 }

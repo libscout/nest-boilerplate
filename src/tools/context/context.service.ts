@@ -12,13 +12,13 @@ export class ContextService {
   }
 
   /** Returns the current request ID. Throws if called outside a request context. */
-  requestId(): string {
-    return this.#getStore().requestId;
+  requestID(): string {
+    return this.#getStore().requestID;
   }
 
   /** Returns the current authenticated user ID, or `undefined`. */
-  userId(): string | undefined {
-    return this.#getStore().userId;
+  userID(): string | undefined {
+    return this.#getStore().userID;
   }
 
   // ── private ──────────────────────────────────────────────────────

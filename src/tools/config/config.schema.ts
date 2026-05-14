@@ -2,6 +2,7 @@ import { plainToInstance } from 'class-transformer';
 import {
   IsEnum,
   IsNumber,
+  IsOptional,
   IsString,
   Max,
   Min,
@@ -16,6 +17,10 @@ export class EnvSchema {
 
   @IsEnum(['development', 'production', 'test'])
   NODE_ENV: 'development' | 'production' | 'test';
+
+  @IsOptional()
+  @IsString()
+  IS_LOCAL_ENV?: string;
 
   @IsString()
   DB_HOST: string;
