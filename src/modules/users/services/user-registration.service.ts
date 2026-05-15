@@ -21,8 +21,6 @@ export class UserRegistrationService {
    * Throws if the email is already taken.
    */
   async register(dto: CreateUserDto): Promise<User> {
-    this.logger.info('Registering new user', { email: dto.email });
-
     const exists = await this.userLookup.existsByEmail(dto.email);
     if (exists) {
       throw new ConflictException(
@@ -41,8 +39,6 @@ export class UserRegistrationService {
 
     const saved = await this.userRepo.save(user);
 
-    this.logger.info('User registered successfully', { userId: saved.id });
-
     return saved;
   }
 
@@ -50,8 +46,6 @@ export class UserRegistrationService {
    * Marks a user's email as verified.
    */
   async verifyEmail(userId: string): Promise<void> {
-    this.logger.info('Verifying user email', { userId });
-
     await this.userRepo.update(userId, { isEmailVerified: true });
   }
 }

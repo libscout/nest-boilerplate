@@ -19,8 +19,6 @@ export class UserPasswordResetService {
   ) {}
 
   async requestReset(email: string): Promise<string> {
-    this.logger.info('Requesting password reset', { email });
-
     const user = await this.userLookup.byEmail(email);
     if (!user) {
       this.logger.debug('Password reset requested for unknown email', {
@@ -37,14 +35,10 @@ export class UserPasswordResetService {
       passwordResetExpiresAt: expiresAt,
     });
 
-    this.logger.info('Password reset token generated', { userId: user.id });
-
     return token;
   }
 
   async confirmReset(token: string, newPassword: string): Promise<void> {
-    this.logger.info('Confirming password reset');
-
     const user = await this.userRepo.findOne({
       where: { passwordResetToken: token },
       select: {
@@ -73,7 +67,5 @@ export class UserPasswordResetService {
       passwordResetToken: null,
       passwordResetExpiresAt: null,
     });
-
-    this.logger.info('Password reset completed', { userId: user.id });
   }
 }

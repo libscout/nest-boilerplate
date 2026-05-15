@@ -32,8 +32,6 @@ export class PostService {
 
     const saved = await this.postRepo.save(post);
 
-    this.logger.info('Post created', { postId: saved.id, authorId });
-
     return saved;
   }
 
@@ -104,8 +102,6 @@ export class PostService {
 
     await this.postRepo.update(id, dto);
 
-    this.logger.info('Post updated', { postId: id });
-
     return this.byId(id, true);
   }
 
@@ -117,7 +113,5 @@ export class PostService {
     }
 
     await this.postRepo.delete(id);
-
-    this.logger.info('Post deleted', { postId: id });
   }
 }
