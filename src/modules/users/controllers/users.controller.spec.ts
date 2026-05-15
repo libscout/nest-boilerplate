@@ -1,13 +1,21 @@
 import { Test, type TestingModule } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
 import * as request from 'supertest';
 import { UsersController } from './users.controller';
-import { UserLookupService } from '../services';
-import { UserRegistrationService } from '../services';
-import { UserPasswordResetService } from '../services';
+import {
+  UserLookupService,
+  UserRegistrationService,
+  UserPasswordResetService,
+} from '../services';
+import { ContextService } from '@src/tools/context';
 
 describe('UsersController', () => {
   let app: INestApplication;
+
+  const mockContext = {
+    userID: jest.fn().mockReturnValue(undefined),
+    requestID: jest.fn().mockReturnValue('req-1'),
+  };
 
   const mockLookup = {
     byId: jest.fn(),
@@ -33,10 +41,14 @@ describe('UsersController', () => {
         { provide: UserLookupService, useValue: mockLookup },
         { provide: UserRegistrationService, useValue: mockRegistration },
         { provide: UserPasswordResetService, useValue: mockPasswordReset },
+        { provide: ContextService, useValue: mockContext },
       ],
     }).compile();
 
     app = module.createNestApplication();
+    app.useGlobalPipes(
+      new ValidationPipe({ transform: true, whitelist: true }),
+    );
     await app.init();
   });
 
@@ -47,8 +59,6 @@ describe('UsersController', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
-
-  // ── POST /users ──────────────────────────────────────────────────
 
   describe('POST /users', () => {
     it('returns 201 with the created user', async () => {
@@ -64,7 +74,11 @@ describe('UsersController', () => {
 
       const res = await request(app.getHttpServer())
         .post('/users')
-        .send({ email: 'test@example.com', name: 'Test', password: 'password123' })
+        .send({
+          email: 'test@example.com',
+          name: 'Test',
+          password: 'password123',
+        })
         .expect(201);
 
       expect(res.body.id).toBe('user-1');
@@ -80,10 +94,8 @@ describe('UsersController', () => {
     });
   });
 
-  // ── GET /users ───────────────────────────────────────────────────
-
   describe('GET /users', () => {
-    it('returns paginated users', async () => {
+    it('returns paginated users with defaults', async () => {
       mockLookup.list.mockResolvedValue({
         data: [
           {
@@ -95,19 +107,78 @@ describe('UsersController', () => {
             updatedAt: new Date('2025-01-01'),
           },
         ],
-        meta: { page: 1, limit: 20, total: 1, totalPages: 1, hasNextPage: false, hasPreviousPage: false },
+        meta: {
+          page: 1,
+          limit: 20,
+          total: 1,
+          totalPages: 1,
+          hasNextPage: false,
+          hasPreviousPage: false,
+        },
       });
 
-      const res = await request(app.getHttpServer())
-        .get('/users')
-        .expect(200);
+      const res = await request(app.getHttpServer()).get('/users').expect(200);
 
       expect(res.body.data).toHaveLength(1);
       expect(res.body.meta.total).toBe(1);
     });
-  });
 
-  // ── GET /users/:id ───────────────────────────────────────────────
+    it('passes pagination params to service', async () => {
+      mockLookup.list.mockResolvedValue({
+        data: [],
+        meta: {
+          page: 2,
+          limit: 5,
+          total: 0,
+          totalPages: 0,
+          hasNextPage: false,
+          hasPreviousPage: true,
+        },
+      });
+
+      await request(app.getHttpServer())
+        .get('/users?page=2&limit=5')
+        .expect(200);
+
+      expect(mockLookup.list).toHaveBeenCalledWith(
+        expect.objectContaining({ page: 2, limit: 5 }),
+      );
+    });
+
+    it('transforms string query params to numbers', async () => {
+      mockLookup.list.mockResolvedValue({
+        data: [],
+        meta: {
+          page: 3,
+          limit: 10,
+          total: 0,
+          totalPages: 0,
+          hasNextPage: false,
+          hasPreviousPage: true,
+        },
+      });
+
+      await request(app.getHttpServer())
+        .get('/users?page=3&limit=10')
+        .expect(200);
+
+      const calledWith = mockLookup.list.mock.calls[0][0];
+      expect(typeof calledWith.page).toBe('number');
+      expect(typeof calledWith.limit).toBe('number');
+    });
+
+    it('returns 400 for invalid page (non-number)', async () => {
+      await request(app.getHttpServer()).get('/users?page=abc').expect(400);
+    });
+
+    it('returns 400 for page less than 1', async () => {
+      await request(app.getHttpServer()).get('/users?page=0').expect(400);
+    });
+
+    it('returns 400 for limit over 100', async () => {
+      await request(app.getHttpServer()).get('/users?limit=200').expect(400);
+    });
+  });
 
   describe('GET /users/:id', () => {
     it('returns a user by id', async () => {
@@ -129,8 +200,6 @@ describe('UsersController', () => {
     });
   });
 
-  // ── POST /users/password-reset/request ───────────────────────────
-
   describe('POST /users/password-reset/request', () => {
     it('returns 202 with a message', async () => {
       mockPasswordReset.requestReset.mockResolvedValue('token');
@@ -141,8 +210,6 @@ describe('UsersController', () => {
         .expect(202);
     });
   });
-
-  // ── POST /users/password-reset/confirm ───────────────────────────
 
   describe('POST /users/password-reset/confirm', () => {
     it('returns 204 on success', async () => {

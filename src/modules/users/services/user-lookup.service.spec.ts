@@ -17,7 +17,7 @@ describe('UserLookupService', () => {
   });
 
   afterAll(async () => {
-    await env?.cleanup();
+    await env.cleanup();
   });
 
   beforeEach(async () => {
@@ -75,7 +75,7 @@ describe('UserLookupService', () => {
         repo.create({ email: 'c@c.com', name: 'C', passwordHash: 'h' }),
       ]);
 
-      const result = await service.list(1, 2);
+      const result = await service.list({ page: 1, limit: 2 });
       expect(result.data).toHaveLength(2);
       expect(result.meta.total).toBe(3);
       expect(result.meta.totalPages).toBe(2);

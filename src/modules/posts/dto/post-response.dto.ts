@@ -1,14 +1,31 @@
+import { Expose, Type } from 'class-transformer';
 import type { Post } from '../entities';
 import { UserResponseDto } from '../../users/dto';
 
 export class PostResponseDto {
+  @Expose()
   id: string;
+
+  @Expose()
   title: string;
+
+  @Expose()
   content: string;
+
+  @Expose()
   isPublished: boolean;
+
+  @Expose()
   authorId: string;
+
+  @Expose()
+  @Type(() => UserResponseDto)
   author?: UserResponseDto;
+
+  @Expose()
   createdAt: string;
+
+  @Expose()
   updatedAt: string;
 
   static fromEntity(post: Post, includeAuthor = false): PostResponseDto {

@@ -8,9 +8,9 @@ import {
   normalizePagination,
   paginate,
   type PaginatedResult,
+  type PaginationDto,
 } from '@src/lib/pagination';
-import type { CreatePostDto } from '../dto';
-import type { UpdatePostDto } from '../dto';
+import type { CreatePostDto, UpdatePostDto } from '../dto';
 
 @Injectable()
 export class PostService {
@@ -21,11 +21,7 @@ export class PostService {
     private readonly logger: LoggerService,
   ) {}
 
-  /**
-   * Creates a new post for the given author.
-   */
   async create(authorId: string, dto: CreatePostDto): Promise<Post> {
-    // Ensure author exists
     await this.userLookup.byId(authorId);
 
     const post = this.postRepo.create({
@@ -41,9 +37,6 @@ export class PostService {
     return saved;
   }
 
-  /**
-   * Returns a single post by ID with optional author relation.
-   */
   async byId(id: string, includeAuthor = false): Promise<Post> {
     const post = await this.postRepo.findOne({
       where: { id },
@@ -57,15 +50,11 @@ export class PostService {
     return post;
   }
 
-  /**
-   * Lists posts with pagination. Only published posts by default.
-   */
   async list(
-    page?: number | string,
-    limit?: number | string,
+    query: PaginationDto,
     includeUnpublished = false,
   ): Promise<PaginatedResult<Post>> {
-    const params = normalizePagination(page, limit);
+    const params = normalizePagination(query.page, query.limit);
 
     this.logger.debug('Listing posts', { ...params, includeUnpublished });
 
@@ -85,16 +74,12 @@ export class PostService {
     return paginate(data, total, params);
   }
 
-  /**
-   * Lists all posts for a specific author.
-   */
   async listByAuthor(
     authorId: string,
-    page?: number | string,
-    limit?: number | string,
+    query: PaginationDto,
   ): Promise<PaginatedResult<Post>> {
-    await this.userLookup.byId(authorId); // ensure author exists
-    const params = normalizePagination(page, limit);
+    await this.userLookup.byId(authorId);
+    const params = normalizePagination(query.page, query.limit);
 
     const [data, total] = await this.postRepo.findAndCount({
       where: { authorId },
@@ -106,9 +91,6 @@ export class PostService {
     return paginate(data, total, params);
   }
 
-  /**
-   * Updates a post. Only the author may update.
-   */
   async update(
     id: string,
     authorId: string,
@@ -127,9 +109,6 @@ export class PostService {
     return this.byId(id, true);
   }
 
-  /**
-   * Deletes a post. Only the author may delete.
-   */
   async delete(id: string, authorId: string): Promise<void> {
     const post = await this.byId(id);
 

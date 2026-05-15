@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  BadRequestException,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { randomBytes } from 'node:crypto';
@@ -13,7 +9,6 @@ import { PasswordHasher } from '../internal/password-hasher';
 
 @Injectable()
 export class UserPasswordResetService {
-  /** Token expires after 1 hour */
   private readonly TOKEN_TTL_MS = 60 * 60 * 1000;
 
   constructor(
@@ -23,16 +18,11 @@ export class UserPasswordResetService {
     private readonly logger: LoggerService,
   ) {}
 
-  /**
-   * Generates a password-reset token and stores it on the user record.
-   * Returns the token so it can be sent to the user (e.g. via email).
-   */
   async requestReset(email: string): Promise<string> {
     this.logger.info('Requesting password reset', { email });
 
     const user = await this.userLookup.byEmail(email);
     if (!user) {
-      // Don't reveal whether the email exists
       this.logger.debug('Password reset requested for unknown email', {
         email,
       });
@@ -52,9 +42,6 @@ export class UserPasswordResetService {
     return token;
   }
 
-  /**
-   * Confirms a password reset by validating the token and setting a new password.
-   */
   async confirmReset(token: string, newPassword: string): Promise<void> {
     this.logger.info('Confirming password reset');
 
@@ -83,8 +70,8 @@ export class UserPasswordResetService {
 
     await this.userRepo.update(user.id, {
       passwordHash: newHash,
-      passwordResetToken: undefined as unknown as string,
-      passwordResetExpiresAt: undefined as unknown as Date,
+      passwordResetToken: null as unknown as string,
+      passwordResetExpiresAt: null as unknown as Date,
     });
 
     this.logger.info('Password reset completed', { userId: user.id });

@@ -21,9 +21,9 @@ export class ContextInterceptor implements NestInterceptor {
 
     const ctx: RequestContext = {
       requestID: (req.headers['x-request-id'] as string) ?? randomUUID(),
+      userID: req.headers['x-user-id'] as string | undefined,
     };
 
-    // Echo the request ID back to the caller
     res.setHeader('x-request-id', ctx.requestID);
 
     return new Observable<unknown>((subscriber) => {

@@ -8,15 +8,19 @@ import {
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
-import { UserLookupService } from '../services';
-import { UserRegistrationService } from '../services';
-import { UserPasswordResetService } from '../services';
+import {
+  UserLookupService,
+  UserRegistrationService,
+  UserPasswordResetService,
+} from '../services';
 import {
   UserResponseDto,
   CreateUserDto,
   RequestPasswordResetDto,
   ConfirmPasswordResetDto,
 } from '../dto';
+import { PaginationDto } from '@src/lib/pagination';
+import { ContextService } from '@src/tools/context';
 
 @Controller('users')
 export class UsersController {
@@ -24,9 +28,8 @@ export class UsersController {
     private readonly userLookup: UserLookupService,
     private readonly userRegistration: UserRegistrationService,
     private readonly passwordReset: UserPasswordResetService,
+    private readonly ctx: ContextService,
   ) {}
-
-  // ── Registration ─────────────────────────────────────────────────
 
   @Post()
   async create(@Body() dto: CreateUserDto): Promise<UserResponseDto> {
@@ -40,14 +43,11 @@ export class UsersController {
     await this.userRegistration.verifyEmail(id);
   }
 
-  // ── Lookup ───────────────────────────────────────────────────────
-
   @Get()
   async list(
-    @Query('page') page?: string,
-    @Query('limit') limit?: string,
+    @Query() query: PaginationDto,
   ): Promise<{ data: UserResponseDto[]; meta: unknown }> {
-    const result = await this.userLookup.list(page, limit);
+    const result = await this.userLookup.list(query);
     return {
       data: result.data.map(UserResponseDto.fromEntity),
       meta: result.meta,
@@ -59,8 +59,6 @@ export class UsersController {
     const user = await this.userLookup.byId(id);
     return UserResponseDto.fromEntity(user);
   }
-
-  // ── Password Reset ───────────────────────────────────────────────
 
   @Post('password-reset/request')
   @HttpCode(HttpStatus.ACCEPTED)

@@ -26,8 +26,8 @@ describe('PostService', () => {
   });
 
   beforeEach(async () => {
-    await postRepo.clear();
-    await userRepo.clear();
+    await postRepo.delete({});
+    await userRepo.delete({});
 
     author = await userRepo.save(
       userRepo.create({
@@ -103,7 +103,7 @@ describe('PostService', () => {
         isPublished: false,
       });
 
-      const result = await service.list();
+      const result = await service.list({ page: 1, limit: 20 });
       expect(result.data).toHaveLength(1);
       expect(result.data[0].title).toBe('Published');
     });
