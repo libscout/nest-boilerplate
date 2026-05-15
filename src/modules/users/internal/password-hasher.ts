@@ -1,12 +1,7 @@
 import { randomBytes, scrypt, timingSafeEqual } from 'node:crypto';
 import { promisify } from 'node:util';
 
-const scryptAsync = promisify<
-  string,
-  string,
-  number,
-  Buffer
->(scrypt as unknown as (...args: unknown[]) => void);
+const scryptAsync = promisify<string, string, number, Buffer>(scrypt);
 
 /**
  * Internal password hashing utility.
@@ -34,10 +29,7 @@ export class PasswordHasher {
   /**
    * Verifies a plaintext password against a stored hash.
    */
-  static async verify(
-    plaintext: string,
-    storedHash: string,
-  ): Promise<boolean> {
+  static async verify(plaintext: string, storedHash: string): Promise<boolean> {
     const [salt, hash] = storedHash.split(PasswordHasher.SEPARATOR);
 
     if (!salt || !hash) {

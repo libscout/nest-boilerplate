@@ -56,9 +56,7 @@ export class TelegramService {
   /**
    * Verifies a Telegram webhook/initData signature.
    */
-  verifyInitData(
-    initData: string,
-  ): { userId: string; valid: boolean } {
+  verifyInitData(initData: string): { userId: string; valid: boolean } {
     this.logger.log('Verifying Telegram initData');
 
     // In production: validate the HMAC signature using the bot token

@@ -1,7 +1,1 @@
-export {
-  pick,
-  omit,
-  deepClone,
-  compact,
-  sortBy,
-} from './objects.lib';
+export { pick, omit, deepClone, compact, sortBy } from './objects.lib';

@@ -47,8 +47,8 @@ describe('UserPasswordResetService', () => {
           passwordResetExpiresAt: true,
         },
       });
-      expect(updated!.passwordResetToken).toBe(token);
-      expect(updated!.passwordResetExpiresAt).toBeInstanceOf(Date);
+      expect(updated.passwordResetToken).toBe(token);
+      expect(updated.passwordResetExpiresAt).toBeInstanceOf(Date);
     });
 
     it('returns a stub token for unknown email without error', async () => {
@@ -81,9 +81,9 @@ describe('UserPasswordResetService', () => {
         },
       });
 
-      expect(updated!.passwordHash).not.toBe('old-hash');
-      expect(updated!.passwordResetToken).toBeNull();
-      expect(updated!.passwordResetExpiresAt).toBeNull();
+      expect(updated.passwordHash).not.toBe('old-hash');
+      expect(updated.passwordResetToken).toBeNull();
+      expect(updated.passwordResetExpiresAt).toBeNull();
     });
 
     it('throws for an invalid token', async () => {

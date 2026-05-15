@@ -30,7 +30,7 @@ export function omit<T extends Record<string, unknown>, K extends keyof T>(
   for (const key of keys) {
     delete result[key];
   }
-  return result as Omit<T, K>;
+  return result;
 }
 
 /**

@@ -70,8 +70,8 @@ export class UserPasswordResetService {
 
     await this.userRepo.update(user.id, {
       passwordHash: newHash,
-      passwordResetToken: null as unknown as string,
-      passwordResetExpiresAt: null as unknown as Date,
+      passwordResetToken: null,
+      passwordResetExpiresAt: null,
     });
 
     this.logger.info('Password reset completed', { userId: user.id });

@@ -65,7 +65,7 @@ describe('UserRegistrationService', () => {
       await service.verifyEmail(user.id);
 
       const updated = await repo.findOneBy({ id: user.id });
-      expect(updated!.isEmailVerified).toBe(true);
+      expect(updated.isEmailVerified).toBe(true);
     });
   });
 });

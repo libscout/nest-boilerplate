@@ -58,7 +58,7 @@ describe('UserLookupService', () => {
 
       const result = await service.byEmail('findme@example.com');
       expect(result).not.toBeNull();
-      expect(result!.name).toBe('Find Me');
+      expect(result.name).toBe('Find Me');
     });
 
     it('returns null for unknown email', async () => {

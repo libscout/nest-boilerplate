@@ -24,7 +24,7 @@ export class PostController {
 
   @Post()
   async create(@Body() dto: CreatePostDto): Promise<PostResponseDto> {
-    const post = await this.postService.create(this.ctx.userID()!, dto);
+    const post = await this.postService.create(this.ctx.userID(), dto);
     return PostResponseDto.fromEntity(post, true);
   }
 
@@ -51,13 +51,13 @@ export class PostController {
     @Param('id') id: string,
     @Body() dto: UpdatePostDto,
   ): Promise<PostResponseDto> {
-    const post = await this.postService.update(id, this.ctx.userID()!, dto);
+    const post = await this.postService.update(id, this.ctx.userID(), dto);
     return PostResponseDto.fromEntity(post, true);
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async delete(@Param('id') id: string): Promise<void> {
-    await this.postService.delete(id, this.ctx.userID()!);
+    await this.postService.delete(id, this.ctx.userID());
   }
 }
