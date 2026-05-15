@@ -1,6 +1,19 @@
-./rules
+# For project rules and conventions see:
 
+[`rules.md`](./rules.md)
 
+# Project Boilerplate
+
+This project was created for demonstration purposes as an example/boilerplate project.
+
+It is intended to showcase:
+
+- project structure
+- architectural conventions
+- testing approach
+- logging setup
+- module boundaries
+- general backend engineering practices
 
 # Logging
 

@@ -22,6 +22,10 @@ export class EnvSchema {
   @IsString()
   IS_LOCAL_ENV?: string;
 
+  @IsOptional()
+  @IsString()
+  DB_SCHEMA_SYNC?: string; // for tests only
+
   @IsString()
   DB_HOST: string;
 

@@ -25,7 +25,7 @@ export class DbModule {
             password: config.getEnv('DB_PASSWORD'),
             database: config.getEnv('DB_DATABASE'),
             autoLoadEntities: true,
-            synchronize: config.getEnv('NODE_ENV') !== 'production',
+            synchronize: config.getEnv('DB_SCHEMA_SYNC') === 'true',
           }),
         }),
       ],
