@@ -2,6 +2,8 @@
 
 [`rules.md`](./rules.md)
 
+---
+
 # Project Boilerplate
 
 This project was created for demonstration purposes as an example/boilerplate project.
@@ -15,15 +17,28 @@ It is intended to showcase:
 - module boundaries
 - general backend engineering practices
 
-# Logging
+## Request Context & Logging
 
-The application uses structured logging.
+The application keeps request-specific context using `AsyncLocalStorage`.
 
-In local development, logs are printed in a pretty, human-readable format to make debugging easier.
+For every incoming HTTP request, `ContextInterceptor` creates a request context containing:
 
-In cloud and production environments, logs are printed as plain JSON. This makes them easy to collect, search, and process by log systems such as CloudWatch, Loki, OpenSearch, Datadog, or Kubernetes log collectors.
+```ts
+{
+  requestID: string;
+  userID?: string;
+}
+```
 
-Each log entry contains the service name, request context, optional user context, and the actual log message body.
+The `requestID` is read from the `x-request-id` header. If the header is missing, a new UUID is generated. The same `requestID` is also added to the response headers as `x-request-id`.
+
+The `userID` is read from the optional `x-user-id` header when the request is performed on behalf of an authenticated user.
+
+`ContextService` stores this context for the lifetime of the request. Any service executed inside the same async request flow can access the current request context without passing `requestID` or `userID` manually through method arguments.
+
+The logger uses this context automatically. Every log written during a request includes the current `requestID`, and includes `userID` when available.
+
+Example log:
 
 ```ts
 interface LogEntry {
@@ -42,6 +57,23 @@ interface LogEntry {
   };
 }
 ```
+
+```json
+{
+  "level": "info",
+  "time": "2026-05-15T10:31:19.000Z",
+  "service": "users-service",
+  "requestID": "req_123",
+  "userID": "user_456",
+  "body": ["User created"]
+}
+```
+
+Logs written outside an HTTP request, for example during application startup or background jobs, are still valid but will not include `requestID` or `userID`.
+
+In local/development environments, logs are printed in a pretty human-readable format. In production/cloud environments, logs are printed as structured JSON.
+
+---
 
 # Usage
 
@@ -126,8 +158,3 @@ REDIS_PORT=6379
 
 ---
 
-## Project Rules
-
-See:
-
-[`./rules.md`](./rules.md)

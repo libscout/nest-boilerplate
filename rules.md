@@ -29,8 +29,7 @@ src
 │       ├── dto                   # DTOs and validation schemas
 │       ├── entities              # Database entities/models
 │       ├── services              # Public domain services / module API
-│       ├── internal              # Private module implementation
-│       └── index.ts              # Public module exports
+│       └── internal              # Private module implementation
 ```
 
 ---
@@ -209,22 +208,6 @@ Avoid module-level barrel exports.
 
 ## Good
 
-```txt
-modules/users
-├── services
-│   ├── user-lookup.service.ts
-│   ├── user-registration.service.ts
-│   └── index.ts
-│
-├── dto
-│   ├── user-response.dto.ts
-│   ├── create-user.dto.ts
-│   └── index.ts
-│
-├── entities
-│   ├── user.entity.ts
-│   └── index.ts
-```
 
 ```ts
 import { UserLookupService } from '../users/services';
@@ -234,16 +217,9 @@ import { UserEntity } from '../users/entities';
 
 ## Bad
 
-```txt
-modules/users
-└── index.ts
-```
-
 ```ts
-import { UserRegistrationService } from '../users/internal/user-registration.service';
+import { UserRegistrationService } from '../users/services/user-registration.service';
 ```
-
-Do not export anything from `internal/`.
 
 ---
 
@@ -330,11 +306,6 @@ src/modules/users/controllers/users.controller.ts
 src/modules/users/controllers/users.controller.spec.ts
 ```
 
-```txt
-src/tools/config/config.service.ts
-src/tools/config/config.service.spec.ts
-```
-
 ---
 
 # Controller Testing
@@ -343,8 +314,7 @@ Controller tests should focus on controller-level behavior.
 
 The purpose of controller tests is to verify:
 
-- controller-local middlewares
-- controller-local interceptors
+- controller-local interceptors and guards
 - validation/transformation pipelines
 - response DTO mapping/serialization
 
@@ -368,54 +338,6 @@ Mock services/business logic dependencies while testing controllers.
 
 ---
 
-# Logging
-
-The application uses structured logging.
-
-In local development, logs are printed in a pretty, human-readable format to make debugging easier.
-
-In cloud and production environments, logs are printed as plain JSON. This makes them easy to collect, search, and process by log systems such as CloudWatch, Loki, OpenSearch, Datadog, or Kubernetes log collectors.
-
-Each log entry contains the service name, request context, optional user context, and the actual log message body.
-
-```ts
-{
-  timestamp: string;
-  level: 'trace' | 'debug' | 'info' | 'warn' | 'error' | 'fatal';
-
-  service: string;
-
-  requestId?: string;
-  userId?: string;
-
-  body: unknown[];
-
-  err?: {
-    message: string;
-    stack?: string;
-  };
-}
-```
-
-The `timestamp` field is exported as an ISO 8601 UTC string.
-
-Example:
-
-```json
-{
-  "timestamp": "2026-05-14T17:30:00.000Z",
-  "level": "info",
-  "service": "users-service",
-  "requestId": "req_123",
-  "userId": "user_456",
-  "body": [
-    "User created",
-    {
-      "email": "test@example.com"
-    }
-  ]
-}
-```
 
 ## Controller DTOs & Response Serialization
 
@@ -443,3 +365,51 @@ Rules:
 
 - use explicit response DTOs for all controller responses.
 - use ISO 8601 UTC strings for dates
+
+---
+
+# Internal Service Communication
+
+Internal service-to-service requests must propagate request context headers.
+
+Required headers:
+
+```txt
+x-request-id
+x-user-id
+```
+
+### `x-request-id`
+
+`x-request-id` is used to correlate logs and traces across services.
+
+Rules:
+
+- reuse the incoming `x-request-id` when calling another internal service
+- generate a new `x-request-id` only if the incoming request does not have one
+- include `x-request-id` in all logs related to the request (done inside of pino setup)
+
+### `x-user-id`
+
+`x-user-id` identifies the authenticated user context.
+
+Rules:
+
+- propagate `x-user-id` when the request is performed on behalf of a user
+- do not invent `x-user-id` for system/background jobs
+- omit `x-user-id` for unauthenticated or system-level requests
+
+### Example
+
+```http
+GET /internal/orders/123 HTTP/1.1
+Host: orders-service
+x-request-id: req_123
+x-user-id: user_456
+```
+
+### Notes
+
+Services should treat these headers as context propagation only.
+
+Authentication and authorization must still be handled explicitly by the receiving service.
