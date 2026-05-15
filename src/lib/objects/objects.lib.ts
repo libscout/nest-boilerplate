@@ -56,11 +56,7 @@ export function compact<T extends Record<string, unknown>>(obj: T): Partial<T> {
 /**
  * Sorts an array of objects by a given key.
  */
-export function sortBy<T>(
-  items: T[],
-  key: keyof T,
-  direction: 'asc' | 'desc' = 'asc',
-): T[] {
+export function sortBy<T>(items: T[], key: keyof T, direction: 'asc' | 'desc' = 'asc'): T[] {
   return [...items].sort((a, b) => {
     const va = a[key];
     const vb = b[key];

@@ -48,10 +48,7 @@ export class PostService {
     return post;
   }
 
-  async list(
-    query: PaginationDto,
-    includeUnpublished = false,
-  ): Promise<PaginatedResult<Post>> {
+  async list(query: PaginationDto, includeUnpublished = false): Promise<PaginatedResult<Post>> {
     const params = normalizePagination(query.page, query.limit);
 
     this.logger.debug('Listing posts', { ...params, includeUnpublished });
@@ -72,10 +69,7 @@ export class PostService {
     return paginate(data, total, params);
   }
 
-  async listByAuthor(
-    authorId: string,
-    query: PaginationDto,
-  ): Promise<PaginatedResult<Post>> {
+  async listByAuthor(authorId: string, query: PaginationDto): Promise<PaginatedResult<Post>> {
     await this.userLookup.byId(authorId);
     const params = normalizePagination(query.page, query.limit);
 
@@ -89,11 +83,7 @@ export class PostService {
     return paginate(data, total, params);
   }
 
-  async update(
-    id: string,
-    authorId: string,
-    dto: UpdatePostDto,
-  ): Promise<Post> {
+  async update(id: string, authorId: string, dto: UpdatePostDto): Promise<Post> {
     const post = await this.byId(id);
 
     if (post.authorId !== authorId) {

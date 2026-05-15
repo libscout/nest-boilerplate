@@ -19,11 +19,7 @@ export function slugify(value: string): string {
 /**
  * Truncates a string to `maxLength` and appends `ellipsis` if truncated.
  */
-export function truncate(
-  value: string,
-  maxLength: number,
-  ellipsis = '…',
-): string {
+export function truncate(value: string, maxLength: number, ellipsis = '…'): string {
   if (value.length <= maxLength) return value;
   return value.slice(0, maxLength - ellipsis.length) + ellipsis;
 }
@@ -40,11 +36,7 @@ export function capitalize(value: string): string {
  * Masks parts of a string, leaving the last `visibleCount` characters visible.
  * Useful for masking emails, phone numbers, etc.
  */
-export function maskEnd(
-  value: string,
-  visibleCount: number,
-  maskChar = '*',
-): string {
+export function maskEnd(value: string, visibleCount: number, maskChar = '*'): string {
   if (value.length <= visibleCount) return value;
   const masked = maskChar.repeat(value.length - visibleCount);
   return masked + value.slice(-visibleCount);

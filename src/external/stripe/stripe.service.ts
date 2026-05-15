@@ -54,10 +54,7 @@ export class StripeService {
   /**
    * Creates a Stripe customer.
    */
-  async createCustomer(params: {
-    email: string;
-    name: string;
-  }): Promise<{ customerId: string }> {
+  async createCustomer(params: { email: string; name: string }): Promise<{ customerId: string }> {
     this.logger.log('Creating Stripe customer', params);
 
     return {

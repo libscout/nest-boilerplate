@@ -23,9 +23,7 @@ export class UserRegistrationService {
   async register(dto: CreateUserDto): Promise<User> {
     const exists = await this.userLookup.existsByEmail(dto.email);
     if (exists) {
-      throw new ConflictException(
-        `User with email "${dto.email}" already exists`,
-      );
+      throw new ConflictException(`User with email "${dto.email}" already exists`);
     }
 
     const passwordHash = await PasswordHasher.hash(dto.password);

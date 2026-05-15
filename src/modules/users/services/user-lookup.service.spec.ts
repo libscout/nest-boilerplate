@@ -40,9 +40,7 @@ describe('UserLookupService', () => {
     });
 
     it('throws when user is not found', async () => {
-      await expect(
-        service.byId('00000000-0000-0000-0000-000000000000'),
-      ).rejects.toThrow();
+      await expect(service.byId('00000000-0000-0000-0000-000000000000')).rejects.toThrow();
     });
   });
 

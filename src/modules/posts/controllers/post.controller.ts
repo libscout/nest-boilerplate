@@ -29,9 +29,7 @@ export class PostController {
   }
 
   @Get()
-  async list(
-    @Query() query: PaginationDto,
-  ): Promise<{ data: PostResponseDto[]; meta: unknown }> {
+  async list(@Query() query: PaginationDto): Promise<{ data: PostResponseDto[]; meta: unknown }> {
     const includeUnpublished = !!this.ctx.userID();
     const result = await this.postService.list(query, includeUnpublished);
     return {
@@ -47,10 +45,7 @@ export class PostController {
   }
 
   @Patch(':id')
-  async update(
-    @Param('id') id: string,
-    @Body() dto: UpdatePostDto,
-  ): Promise<PostResponseDto> {
+  async update(@Param('id') id: string, @Body() dto: UpdatePostDto): Promise<PostResponseDto> {
     const post = await this.postService.update(id, this.ctx.userID(), dto);
     return PostResponseDto.fromEntity(post, true);
   }

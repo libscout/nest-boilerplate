@@ -18,11 +18,7 @@ export class PasswordHasher {
    */
   static async hash(password: string): Promise<string> {
     const salt = randomBytes(16).toString('hex');
-    const derivedKey = await scryptAsync(
-      password,
-      salt,
-      PasswordHasher.KEY_LEN,
-    );
+    const derivedKey = await scryptAsync(password, salt, PasswordHasher.KEY_LEN);
     return `${salt}${PasswordHasher.SEPARATOR}${derivedKey.toString('hex')}`;
   }
 
@@ -36,11 +32,7 @@ export class PasswordHasher {
       return false;
     }
 
-    const derivedKey = await scryptAsync(
-      plaintext,
-      salt,
-      PasswordHasher.KEY_LEN,
-    );
+    const derivedKey = await scryptAsync(plaintext, salt, PasswordHasher.KEY_LEN);
 
     return timingSafeEqual(derivedKey, Buffer.from(hash, 'hex'));
   }

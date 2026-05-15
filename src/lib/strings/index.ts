@@ -1,7 +1,1 @@
-export {
-  slugify,
-  truncate,
-  capitalize,
-  maskEnd,
-  initials,
-} from './strings.lib';
+export { slugify, truncate, capitalize, maskEnd, initials } from './strings.lib';

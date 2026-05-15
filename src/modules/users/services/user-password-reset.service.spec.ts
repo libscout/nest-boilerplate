@@ -87,9 +87,7 @@ describe('UserPasswordResetService', () => {
     });
 
     it('throws for an invalid token', async () => {
-      await expect(
-        service.confirmReset('invalid-token', 'newpass'),
-      ).rejects.toThrow();
+      await expect(service.confirmReset('invalid-token', 'newpass')).rejects.toThrow();
     });
   });
 });

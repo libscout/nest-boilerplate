@@ -1,7 +1,4 @@
-import {
-  Injectable,
-  type LoggerService as NestLoggerService,
-} from '@nestjs/common';
+import { Injectable, type LoggerService as NestLoggerService } from '@nestjs/common';
 import type { Logger as PinoLogger } from 'pino';
 
 @Injectable()

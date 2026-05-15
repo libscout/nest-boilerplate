@@ -64,8 +64,7 @@ export class LoggerModule {
         {
           provide: LoggerService,
           inject: [PINO_LOGGER],
-          useFactory: (logger: Logger): LoggerService =>
-            new LoggerService(logger),
+          useFactory: (logger: Logger): LoggerService => new LoggerService(logger),
         },
       ],
       exports: [LoggerService],

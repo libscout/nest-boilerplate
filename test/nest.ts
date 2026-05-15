@@ -1,10 +1,6 @@
 import { type ModuleMetadata } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
-import {
-  GenericContainer,
-  type StartedTestContainer,
-  Wait,
-} from 'testcontainers';
+import { GenericContainer, type StartedTestContainer, Wait } from 'testcontainers';
 import { ConfigModule } from '@src/tools/config';
 import { DbModule } from '@src/tools/db';
 import { RedisModule } from '@src/tools/redis';
@@ -71,9 +67,7 @@ export class TestEnv {
         POSTGRES_DB: env.DB_DATABASE,
       })
       .withExposedPorts(5432)
-      .withWaitStrategy(
-        Wait.forLogMessage('database system is ready to accept connections'),
-      )
+      .withWaitStrategy(Wait.forLogMessage('database system is ready to accept connections'))
       .start();
 
     env.DB_HOST = container.getHost();

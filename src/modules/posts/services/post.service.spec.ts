@@ -84,9 +84,7 @@ describe('PostService', () => {
     });
 
     it('throws for unknown post', async () => {
-      await expect(
-        service.byId('00000000-0000-0000-0000-000000000000'),
-      ).rejects.toThrow();
+      await expect(service.byId('00000000-0000-0000-0000-000000000000')).rejects.toThrow();
     });
   });
 

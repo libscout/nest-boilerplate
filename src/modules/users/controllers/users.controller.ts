@@ -1,18 +1,5 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Param,
-  Body,
-  Query,
-  HttpCode,
-  HttpStatus,
-} from '@nestjs/common';
-import {
-  UserLookupService,
-  UserRegistrationService,
-  UserPasswordResetService,
-} from '../services';
+import { Controller, Get, Post, Param, Body, Query, HttpCode, HttpStatus } from '@nestjs/common';
+import { UserLookupService, UserRegistrationService, UserPasswordResetService } from '../services';
 import {
   UserResponseDto,
   CreateUserDto,
@@ -44,9 +31,7 @@ export class UsersController {
   }
 
   @Get()
-  async list(
-    @Query() query: PaginationDto,
-  ): Promise<{ data: UserResponseDto[]; meta: unknown }> {
+  async list(@Query() query: PaginationDto): Promise<{ data: UserResponseDto[]; meta: unknown }> {
     const result = await this.userLookup.list(query);
     return {
       data: result.data.map(UserResponseDto.fromEntity),
@@ -62,21 +47,16 @@ export class UsersController {
 
   @Post('password-reset/request')
   @HttpCode(HttpStatus.ACCEPTED)
-  async requestPasswordReset(
-    @Body() dto: RequestPasswordResetDto,
-  ): Promise<{ message: string }> {
+  async requestPasswordReset(@Body() dto: RequestPasswordResetDto): Promise<{ message: string }> {
     await this.passwordReset.requestReset(dto.email);
     return {
-      message:
-        'If an account with that email exists, a reset link has been sent.',
+      message: 'If an account with that email exists, a reset link has been sent.',
     };
   }
 
   @Post('password-reset/confirm')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async confirmPasswordReset(
-    @Body() dto: ConfirmPasswordResetDto,
-  ): Promise<void> {
+  async confirmPasswordReset(@Body() dto: ConfirmPasswordResetDto): Promise<void> {
     await this.passwordReset.confirmReset(dto.token, dto.newPassword);
   }
 }

@@ -31,9 +31,7 @@ describe('PostController', () => {
     }).compile();
 
     app = module.createNestApplication();
-    app.useGlobalPipes(
-      new ValidationPipe({ transform: true, whitelist: true }),
-    );
+    app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }));
     await app.init();
   });
 
@@ -74,10 +72,7 @@ describe('PostController', () => {
       expect(res.body.id).toBe('post-1');
       expect(res.body.title).toBe('Hello');
       expect(res.body.author).toBeDefined();
-      expect(mockPostService.create).toHaveBeenCalledWith(
-        'author-1',
-        expect.any(Object),
-      );
+      expect(mockPostService.create).toHaveBeenCalledWith('author-1', expect.any(Object));
     });
   });
 
@@ -153,9 +148,7 @@ describe('PostController', () => {
         },
       });
 
-      await request(app.getHttpServer())
-        .get('/posts?page=3&limit=10')
-        .expect(200);
+      await request(app.getHttpServer()).get('/posts?page=3&limit=10').expect(200);
 
       const calledWith = mockPostService.list.mock.calls[0][0];
       expect(typeof calledWith.page).toBe('number');
@@ -191,9 +184,7 @@ describe('PostController', () => {
         updatedAt: new Date('2025-01-01'),
       });
 
-      const res = await request(app.getHttpServer())
-        .get('/posts/post-1')
-        .expect(200);
+      const res = await request(app.getHttpServer()).get('/posts/post-1').expect(200);
 
       expect(res.body.id).toBe('post-1');
       expect(res.body.title).toBe('Single');
@@ -226,11 +217,7 @@ describe('PostController', () => {
         .expect(200);
 
       expect(res.body.title).toBe('Updated');
-      expect(mockPostService.update).toHaveBeenCalledWith(
-        'post-1',
-        'author-1',
-        expect.any(Object),
-      );
+      expect(mockPostService.update).toHaveBeenCalledWith('post-1', 'author-1', expect.any(Object));
     });
   });
 

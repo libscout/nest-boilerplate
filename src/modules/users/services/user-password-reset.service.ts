@@ -53,10 +53,7 @@ export class UserPasswordResetService {
       throw new BadRequestException('Invalid or expired reset token');
     }
 
-    if (
-      !user.passwordResetExpiresAt ||
-      user.passwordResetExpiresAt.getTime() < Date.now()
-    ) {
+    if (!user.passwordResetExpiresAt || user.passwordResetExpiresAt.getTime() < Date.now()) {
       throw new BadRequestException('Reset token has expired');
     }
 

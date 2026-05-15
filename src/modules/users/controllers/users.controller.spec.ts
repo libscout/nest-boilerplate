@@ -2,11 +2,7 @@ import { Test, type TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import request from 'supertest';
 import { UsersController } from './users.controller';
-import {
-  UserLookupService,
-  UserRegistrationService,
-  UserPasswordResetService,
-} from '../services';
+import { UserLookupService, UserRegistrationService, UserPasswordResetService } from '../services';
 import { ContextService } from '@src/tools/context';
 
 describe('UsersController', () => {
@@ -46,9 +42,7 @@ describe('UsersController', () => {
     }).compile();
 
     app = module.createNestApplication();
-    app.useGlobalPipes(
-      new ValidationPipe({ transform: true, whitelist: true }),
-    );
+    app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }));
     await app.init();
   });
 
@@ -136,13 +130,9 @@ describe('UsersController', () => {
         },
       });
 
-      await request(app.getHttpServer())
-        .get('/users?page=2&limit=5')
-        .expect(200);
+      await request(app.getHttpServer()).get('/users?page=2&limit=5').expect(200);
 
-      expect(mockLookup.list).toHaveBeenCalledWith(
-        expect.objectContaining({ page: 2, limit: 5 }),
-      );
+      expect(mockLookup.list).toHaveBeenCalledWith(expect.objectContaining({ page: 2, limit: 5 }));
     });
 
     it('transforms string query params to numbers', async () => {
@@ -158,9 +148,7 @@ describe('UsersController', () => {
         },
       });
 
-      await request(app.getHttpServer())
-        .get('/users?page=3&limit=10')
-        .expect(200);
+      await request(app.getHttpServer()).get('/users?page=3&limit=10').expect(200);
 
       const calledWith = mockLookup.list.mock.calls[0][0];
       expect(typeof calledWith.page).toBe('number');
@@ -191,9 +179,7 @@ describe('UsersController', () => {
         updatedAt: new Date('2025-01-01'),
       });
 
-      const res = await request(app.getHttpServer())
-        .get('/users/user-1')
-        .expect(200);
+      const res = await request(app.getHttpServer()).get('/users/user-1').expect(200);
 
       expect(res.body.id).toBe('user-1');
       expect(res.body.isEmailVerified).toBe(true);

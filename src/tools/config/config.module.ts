@@ -13,9 +13,7 @@ export class ConfigModule {
     return {
       module: ConfigModule,
       global: true,
-      providers: [
-        { provide: ConfigService, useFactory: () => new ConfigService(env) },
-      ],
+      providers: [{ provide: ConfigService, useFactory: () => new ConfigService(env) }],
       exports: [ConfigService],
     };
   }
@@ -24,9 +22,7 @@ export class ConfigModule {
     return {
       module: ConfigModule,
       global: true,
-      providers: [
-        { provide: ConfigService, useFactory: () => new ConfigService(env) },
-      ],
+      providers: [{ provide: ConfigService, useFactory: () => new ConfigService(env) }],
       exports: [ConfigService],
     };
   }
