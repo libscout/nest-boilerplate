@@ -208,7 +208,6 @@ Avoid module-level barrel exports.
 
 ## Good
 
-
 ```ts
 import { UserLookupService } from '../users/services';
 import { UserResponseDto } from '../users/dto';
@@ -337,7 +336,6 @@ Mock services/business logic dependencies while testing controllers.
 - Mock external systems only when real infrastructure is impractical or unnecessary for the test scope.
 
 ---
-
 
 ## Controller DTOs & Response Serialization
 
